@@ -72,7 +72,7 @@
             const formData = new FormData();
             formData.append('file', file);
 
-            fetch(`/upload-handler/${file.name}`, {
+            fetch(`/uploads/${file.name}`, {
                 method: 'PUT',
                 body: file,
             })
