@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Upload</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f4f4f4;
+        }
+
+        #drop-zone {
+            width: 80%;
+            max-width: 500px;
+            height: 200px;
+            border: 2px dashed #007bff;
+            border-radius: 10px;
+            background-color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            color: #007bff;
+            cursor: pointer;
+        }
+
+        #drop-zone.dragover {
+            border-color: #0056b3;
+            background-color: #e7f3ff;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+<div id="drop-zone">
+    Drag & drop files here or click to upload
+    <input type="file" id="fileInput" multiple>
+</div>
+<script>
+    const dropZone = document.getElementById('drop-zone');
+    const fileInput = document.getElementById('fileInput');
+
+    dropZone.addEventListener('click', () => fileInput.click());
+
+    dropZone.addEventListener('dragover', (event) => {
+        event.preventDefault();
+        dropZone.classList.add('dragover');
+    });
+
+    dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+
+    dropZone.addEventListener('drop', (event) => {
+        event.preventDefault();
+        dropZone.classList.remove('dragover');
+        const files = event.dataTransfer.files;
+        uploadFiles(files);
+    });
+
+    fileInput.addEventListener('change', () => uploadFiles(fileInput.files));
+
+    function uploadFiles(files) {
+        for (const file of files) {
+            const formData = new FormData();
+            formData.append('file', file);
+
+            fetch(`/upload-handler/${file.name}`, {
+                method: 'PUT',
+                body: file,
+            })
+                .then((response) => {
+                    if (response.ok) {
+                        alert(`${file.name} uploaded successfully!`);
+                    } else {
+                        alert(`${file.name} upload failed.`);
+                    }
+                })
+                .catch((error) => {
+                    console.error(error);
+                    alert('File upload failed.');
+                });
+        }
+    }
+</script>
+</body>
+</html>
